@@ -1,5 +1,6 @@
 package com.vta4j.model;
 
+import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -47,6 +49,42 @@ public final class Model {
 
         return properties.getProperty("api_key");
     } //getApiKey
+
+    private static Set<Bus> parseBody(String body) {
+        Gson gson = new Gson();
+
+        JsonObject object = gson.fromJson(body, JsonObject.class);
+
+        JsonObject serviceDelivery = object.getAsJsonObject("ServiceDelivery");
+
+        boolean status0 = serviceDelivery.getAsJsonPrimitive("Status")
+                                         .getAsBoolean();
+
+        if (!status0) {
+            return Set.of();
+        } //end if
+
+        JsonObject stopMonitoringDelivery = serviceDelivery.getAsJsonObject("StopMonitoringDelivery");
+
+        boolean status1 = stopMonitoringDelivery.getAsJsonPrimitive("Status")
+                                                .getAsBoolean();
+
+        if (!status1) {
+            return Set.of();
+        } //end if
+
+        JsonArray monitoredStopVisit = stopMonitoringDelivery.getAsJsonArray("MonitoredStopVisit");
+
+        Set<Bus> buses = new HashSet<>();
+
+        for (JsonElement element : monitoredStopVisit) {
+            Bus bus = gson.fromJson(element, Bus.class);
+
+            buses.add(bus);
+        } //end for
+
+        return buses;
+    } //parseBody
 
     public static Set<Bus> getBuses(int stopId) {
         if (Model.API_KEY == null) {
@@ -107,9 +145,19 @@ public final class Model {
 
         String body = new String(bytes);
 
-        System.out.println(body);
+        Set<Bus> buses;
 
-        return null;
+        try {
+            buses = Model.parseBody(body);
+        } catch (RuntimeException e) {
+            Model.LOGGER.atError()
+                        .withThrowable(e)
+                        .log();
+
+            return Set.of();
+        } //end try catch
+
+        return buses;
     } //getBuses
 
     public static void main(String[] args) {
