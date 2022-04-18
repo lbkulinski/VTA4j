@@ -22,28 +22,32 @@
  * SOFTWARE.
  */
 
-package com.vta4j.model;
+package com.vta4j.controller;
 
-import java.util.Objects;
+import com.vta4j.model.Bus;
+import com.vta4j.model.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * A bus line of the Valley Transportation Authority.
- *
- * @author Logan Kulinski, lbkulinski@gmail.com
- * @version April 17, 2022
- * @param id the ID of this {@link Line}
- * @param name the name of this {@link Line}
- */
-public record Line(String id, String name) {
-    /**
-     * Constructs an instance of the {@link Line} class.
-     *
-     * @param id the ID to be used in the operation
-     * @param name the name to be used in the operation
-     */
-    public Line {
-        Objects.requireNonNull(id, "the specified ID is null");
+import java.util.Map;
+import java.util.Set;
 
-        Objects.requireNonNull(name, "the specified name is null");
-    } //Line
+@RestController
+@RequestMapping("api")
+public final class Controller {
+    @GetMapping("get_buses")
+    public ResponseEntity<Map<String, ?>> getBuses(@RequestParam("stop_id") int stopId) {
+        Set<Bus> buses = Model.getBuses(stopId);
+
+        Map<String, ?> responseMap = Map.of(
+            "success", true,
+            "buses", buses
+        );
+
+        return new ResponseEntity<>(responseMap, HttpStatus.OK);
+    } //getBuses
 }
