@@ -394,6 +394,8 @@
         if (urlParameters.has("stop_id")) {
             stopId = urlParameters.get("stop_id");
 
+            $("#input_stop_id").val(stopId);
+
             $("#hidden_input_stop_id").val(stopId);
         } //end if
 
