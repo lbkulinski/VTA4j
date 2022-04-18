@@ -83,7 +83,7 @@
                 <div class="col-9">
                     <div class="input-group">
                         <div class="input-group-text">Stop ID</div>
-                        <input type="text" class="form-control shadow-none" id="input_stop_id"
+                        <input type="text" class="form-control shadow-none" id="input_stop_id" name="stop_id"
                                aria-describedby="The input for specifying a stop ID">
                         <div class="invalid-tooltip">
                             Please enter a valid stop ID.
@@ -91,7 +91,7 @@
                     </div>
                 </div>
                 <div class="col-3">
-                    <button type="button" id="button_search" class="btn btn-primary" style="width: 100%;" disabled>
+                    <button type="submit" id="button_search" class="btn btn-primary" style="width: 100%;" disabled>
                         Search
                     </button>
                 </div>
@@ -263,16 +263,21 @@
 
         difference = Math.floor(difference);
 
-        let etaData = $("<td>");
+        let etaString;
+
+        let row = $("<tr>");
 
         if (difference <= 1) {
-            etaData.addClass("table-success")
-                   .text("Due");
+            etaString = "Due";
+
+            row.addClass("table-success");
         } else {
-            etaData.text(`${difference} min`);
+            etaString = `${difference} min`;
         } //end if
 
-        return $("<tr>").append(lineData, destinationData, idData, etaData);
+        let etaData = $("<td>").text(etaString);
+
+        return row.append(lineData, destinationData, idData, etaData);
     } //getTableRow
 
     function showTable(buses, div_buses) {
@@ -356,10 +361,6 @@
     } //updateBuses
 
     $(function () {
-        $("#form_stop_id").submit(function (e) {
-            e.preventDefault();
-        });
-
         $("#input_stop_id").on("input", function () {
             let stopId = $(this).val();
 
@@ -384,14 +385,6 @@
 
                 $("#button_search").prop("disabled", true);
             } //end if
-        });
-
-        $("#button_search").click(function () {
-            let stopId = $("#input_stop_id").val();
-
-            $("#hidden_input_stop_id").val(stopId);
-
-            updateBuses();
         });
 
         let urlParameters = new URLSearchParams(window.location.search);
