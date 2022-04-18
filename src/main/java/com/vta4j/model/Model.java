@@ -138,8 +138,6 @@ public final class Model {
 
         String uriString = "https://api.511.org/transit/StopMonitoring?%s".formatted(query);
 
-        System.out.println(uriString);
-
         URI uri;
 
         try {

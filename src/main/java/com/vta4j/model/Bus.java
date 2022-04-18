@@ -32,6 +32,7 @@ import java.util.Objects;
  *
  * @author Logan Kulinski, lbkulinski@gmail.com
  * @version April 17, 2022
+ * @param id the ID of this bus
  * @param line the line of this bus
  * @param stop the stop of this bus
  * @param destination the destination of this bus
@@ -39,17 +40,20 @@ import java.util.Objects;
  * @param predictionTime the prediction time of this bus
  * @param arrivalTime the arrival time of this bus
  */
-public record Bus(Line line, Stop stop, Stop destination, String direction, ZonedDateTime predictionTime,
+public record Bus(String id, Line line, Stop stop, Stop destination, String direction, ZonedDateTime predictionTime,
                   ZonedDateTime arrivalTime) {
     /**
      * Constructs an instance of the {@link Bus} class.
      *
+     * @param id the ID to be used in construction
      * @param line the line to be used in construction
      * @param stop the stop to be used in construction
      * @param destination the destination to be used in construction
      * @param direction the direction to be used in construction
      * @param predictionTime the prediction time to be used in construction
      * @param arrivalTime the arrival time to be used in construction
+     * @throws NullPointerException if the specified line, stop, direction, prediction time, or arrival time is
+     * {@code null}
      */
     public Bus {
         Objects.requireNonNull(line, "the specified line is null");

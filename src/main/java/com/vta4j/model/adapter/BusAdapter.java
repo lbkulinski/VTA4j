@@ -26,6 +26,7 @@ package com.vta4j.model.adapter;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.vta4j.model.Bus;
 import com.vta4j.model.Line;
@@ -106,14 +107,14 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         jsonWriter.value(direction);
 
-        jsonWriter.name("prediction_time");
+        jsonWriter.name("predictionTime");
 
         String predictionTime = bus.predictionTime()
                                    .toString();
 
         jsonWriter.value(predictionTime);
 
-        jsonWriter.name("arrival_time");
+        jsonWriter.name("arrivalTime");
 
         String arrivalTime = bus.arrivalTime()
                                 .toString();
@@ -168,6 +169,12 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         while (jsonReader.hasNext()) {
             String name = jsonReader.nextName();
 
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.skipValue();
+
+                continue;
+            } //end if
+
             switch (name) {
                 case "StopPointRef" -> {
                     String stopId = jsonReader.nextString();
@@ -198,7 +205,18 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         while (jsonReader.hasNext()) {
             String name = jsonReader.nextName();
 
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.skipValue();
+
+                continue;
+            } //end if
+
             switch (name) {
+                case "VehicleRef" -> {
+                    String id = jsonReader.nextString();
+
+                    busData.put("id", id);
+                } //case "VehicleRef"
                 case "LineRef" -> {
                     String lineId = jsonReader.nextString();
 
@@ -242,6 +260,12 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         while (jsonReader.hasNext()) {
             String name = jsonReader.nextName();
 
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.skipValue();
+
+                continue;
+            } //end if
+
             switch (name) {
                 case "RecordedAtTime" -> {
                     String key = "predictionTime";
@@ -255,6 +279,8 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         jsonReader.endObject();
 
+        String id = (String) busData.get("id");
+
         String lineId = (String) busData.get("lineId");
 
         String lineName = (String) busData.get("lineName");
@@ -265,7 +291,13 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         String stopName = (String) busData.get("stopName");
 
-        Stop stop = new Stop(stopId, stopName);
+        Stop stop;
+
+        if ((stopId == null) && (stopName == null)) {
+            stop = null;
+        } else {
+            stop = new Stop(stopId, stopName);
+        } //end if
 
         String destinationId = (String) busData.get("destinationId");
 
@@ -279,7 +311,7 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         ZonedDateTime arrivalTime = (ZonedDateTime) busData.get("arrivalTime");
 
-        return new Bus(line, stop, destination, direction, predictionTime, arrivalTime);
+        return new Bus(id, line, stop, destination, direction, predictionTime, arrivalTime);
     } //readBus
 
     @Override

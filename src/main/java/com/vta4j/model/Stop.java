@@ -35,15 +35,4 @@ import java.util.Objects;
  * @param name the name of this {@link Stop}
  */
 public record Stop(String id, String name) {
-    /**
-     * Constructs an instance of the {@link Stop} class.
-     *
-     * @param id the ID to be used in the operation
-     * @param name the name to be used in the operation
-     */
-    public Stop {
-        Objects.requireNonNull(id, "the specified ID is null");
-
-        Objects.requireNonNull(name, "the specified name is null");
-    } //Line
 }
