@@ -1,6 +1,7 @@
 package com.vta4j.model;
 
 import com.google.gson.*;
+import com.vta4j.model.adapter.BusAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +52,13 @@ public final class Model {
     } //getApiKey
 
     private static Set<Bus> parseBody(String body) {
-        Gson gson = new Gson();
+        GsonBuilder builder = new GsonBuilder();
+
+        BusAdapter busAdapter = new BusAdapter();
+
+        builder.registerTypeAdapter(Bus.class, busAdapter);
+
+        Gson gson = builder.create();
 
         JsonObject object = gson.fromJson(body, JsonObject.class);
 
@@ -78,9 +85,21 @@ public final class Model {
         Set<Bus> buses = new HashSet<>();
 
         for (JsonElement element : monitoredStopVisit) {
-            Bus bus = gson.fromJson(element, Bus.class);
+            Bus bus;
 
-            buses.add(bus);
+            try {
+                bus = gson.fromJson(element, Bus.class);
+            } catch (Exception e) {
+                Model.LOGGER.atError()
+                            .withThrowable(e)
+                            .log();
+
+                bus = null;
+            } //end try catch
+
+            if (bus != null) {
+                buses.add(bus);
+            } //end if
         } //end for
 
         return buses;
@@ -159,8 +178,4 @@ public final class Model {
 
         return buses;
     } //getBuses
-
-    public static void main(String[] args) {
-        System.out.println(Model.getBuses(60461));
-    } //main
 }
