@@ -363,7 +363,9 @@
     } //updateBuses
 
     $(function () {
-        $("#input_stop_id").on("input", function () {
+        let input_stop_id = $("#input_stop_id");
+
+        input_stop_id.on("input", function () {
             let stopId = $(this).val();
 
             stopId = stopId.trim();
@@ -396,7 +398,9 @@
         if (urlParameters.has("stop_id")) {
             stopId = urlParameters.get("stop_id");
 
-            $("#input_stop_id").val(stopId);
+            input_stop_id.val(stopId);
+
+            $("#button_search").prop("disabled", false);
 
             $("#hidden_input_stop_id").val(stopId);
         } //end if
