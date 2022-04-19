@@ -271,6 +271,8 @@
             etaString = "Due";
 
             row.addClass("table-success");
+        } else if (difference >= 60) {
+            etaString = "-";
         } else {
             etaString = `${difference} min`;
         } //end if
