@@ -299,7 +299,13 @@
         });
 
         if (stop && stop.hasOwnProperty("name")) {
-            $("#div_stop_name").text(stop.name);
+            let div_stop_name = $("#div_stop_name");
+
+            let currentStopName = div_stop_name.val();
+
+            if (stop !== currentStopName) {
+                div_stop_name.text(stop.name);
+            } //end if
         } //end if
 
         $("#div_buses_error").hide();
@@ -308,8 +314,6 @@
     } //showTable
 
     function updateBuses() {
-        $("#div_stop_name").text("");
-
         let stopId = $("#hidden_input_stop_id").val();
 
         if (!stopId) {
@@ -342,6 +346,8 @@
                 showTable(buses, div_buses);
             },
             "error": function () {
+                $("#div_stop_name").text("");
+
                 $("#div_buses").hide();
 
                 $("#div_buses_error").show();
