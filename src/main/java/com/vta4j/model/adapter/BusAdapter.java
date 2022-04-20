@@ -25,29 +25,47 @@
 package com.vta4j.model.adapter;
 
 import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import com.vta4j.model.Bus;
-import com.vta4j.model.Line;
-import com.vta4j.model.Stop;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import com.google.gson.stream.JsonWriter;
+import com.vta4j.model.Line;
 import java.io.IOException;
-import java.time.*;
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.Map;
+import com.vta4j.model.Stop;
 import java.util.Objects;
+import com.google.gson.stream.JsonReader;
+import java.util.Map;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.DateTimeException;
+import com.google.gson.stream.JsonToken;
+import java.util.HashMap;
 
+/**
+ * A GSON type adapter for the {@link Bus} class.
+ * 
+ * @author Logan Kulinski, lbkulinski@gmail.com
+ * @version April 19, 2022
+ */
 public final class BusAdapter extends TypeAdapter<Bus> {
+    /**
+     * The logger of the {@link BusAdapter} class.
+     */
     private static final Logger LOGGER;
 
     static {
         LOGGER = LogManager.getLogger();
     } //static
 
+    /**
+     * Writes the specified line using the specified JSON writer.
+     * 
+     * @param jsonWriter the JSON writer to be used in the operation
+     * @param line the line to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     private static void writeLine(JsonWriter jsonWriter, Line line) throws IOException {
         jsonWriter.name("line");
 
@@ -59,7 +77,7 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         jsonWriter.value(id);
 
-        jsonWriter.value("name");
+        jsonWriter.name("name");
 
         String name = line.name();
 
@@ -68,6 +86,13 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         jsonWriter.endObject();
     } //writeLine
 
+    /**
+     * Writes the specified destination using the specified JSON writer.
+     * 
+     * @param jsonWriter the JSON writer to be used in the operation
+     * @param destination the destination to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     private static void writeDestination(JsonWriter jsonWriter, Stop destination) throws IOException {
         jsonWriter.name("destination");
 
@@ -88,6 +113,13 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         jsonWriter.endObject();
     } //writeDestination
 
+    /**
+     * Writes the specified bus using the specified JSON writer.
+     *
+     * @param jsonWriter the JSON writer to be used in the operation
+     * @param bus the bus to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     public static void writeBus(JsonWriter jsonWriter, Bus bus) throws IOException {
         Objects.requireNonNull(jsonWriter, "the specified JSON writer is null");
 
@@ -124,16 +156,31 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         jsonWriter.endObject();
     } //writeBus
 
+    /**
+     * Writes the specified bus using the specified JSON writer.
+     *
+     * @param jsonWriter the JSON writer to be used in the operation
+     * @param bus the bus to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public void write(JsonWriter jsonWriter, Bus bus) throws IOException {
         BusAdapter.writeBus(jsonWriter, bus);
     } //write
 
+    /**
+     * Reads a time using the specified JSON reader, bus data, and key.
+     * 
+     * @param jsonReader the JSON reader to be used in the operation
+     * @param busData the bus data to be used in the operation
+     * @param key the key to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     private static void readTime(JsonReader jsonReader, Map<String, Object> busData, String key) throws IOException {
-        Instant instant;
-
         String timeString = jsonReader.nextString();
 
+        Instant instant;
+        
         try {
             instant = Instant.parse(timeString);
         } catch (DateTimeParseException e) {
@@ -163,6 +210,13 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         busData.put(key, dateTime);
     } //readTime
 
+    /**
+     * Reads a monitored call using the specified JSON reader and bus data.
+     *
+     * @param jsonReader the JSON reader to be used in the operation
+     * @param busData the bus data to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     private static void readMonitoredCall(JsonReader jsonReader, Map<String, Object> busData) throws IOException {
         jsonReader.beginObject();
 
@@ -198,6 +252,13 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         jsonReader.endObject();
     } //readMonitoredCall
 
+    /**
+     * Reads a monitored vehicle journey using the specified JSON reader and bus data.
+     *
+     * @param jsonReader the JSON reader to be used in the operation
+     * @param busData the bus data to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     private static void readMonitoredVehicleJourney(JsonReader jsonReader,
                                                     Map<String, Object> busData) throws IOException {
         jsonReader.beginObject();
@@ -250,6 +311,12 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         jsonReader.endObject();
     } //readMonitoredVehicleJourney
 
+    /**
+     * Reads a bus journey using the specified JSON reader.
+     *
+     * @param jsonReader the JSON reader to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     public static Bus readBus(JsonReader jsonReader) throws IOException {
         Objects.requireNonNull(jsonReader, "the specified JSON reader is null");
 
@@ -314,6 +381,12 @@ public final class BusAdapter extends TypeAdapter<Bus> {
         return new Bus(id, line, stop, destination, direction, predictionTime, arrivalTime);
     } //readBus
 
+    /**
+     * Reads a bus journey using the specified JSON reader.
+     *
+     * @param jsonReader the JSON reader to be used in the operation
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public Bus read(JsonReader jsonReader) throws IOException {
         return BusAdapter.readBus(jsonReader);

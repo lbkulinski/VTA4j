@@ -24,17 +24,16 @@
 
 package com.vta4j.controller;
 
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import java.util.Map;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Set;
 import com.vta4j.model.Bus;
 import com.vta4j.model.Model;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api/buses")
