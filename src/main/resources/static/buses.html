@@ -266,8 +266,8 @@
             etaString = "Due";
 
             row.addClass("table-success");
-        } else if (difference >= 60) {
-            return null;
+        } else if (difference > 60) {
+            etaString = "> 60 min";
         } else {
             etaString = `${difference} min`;
         } //end if
@@ -317,16 +317,8 @@
         } //end if
 
         let data = {
-            "stop_id": stopId
+            "stopId": stopId
         };
-
-        /*
-        let urlParameters = new URLSearchParams(window.location.search);
-
-        if (urlParameters.has("route")) {
-          data["route"] = urlParameters.getAll("route");
-        } //end if
-         */
 
         $.ajax({
             "type": "GET",
