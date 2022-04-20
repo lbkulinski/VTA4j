@@ -35,11 +35,23 @@ import com.vta4j.model.Bus;
 import com.vta4j.model.Model;
 import org.springframework.http.HttpStatus;
 
+/**
+ * A controller of the VTA4j application.
+ *
+ * @author Logan Kulinski, lbkulinski@gmail.com
+ * @version April 19, 2022
+ */
 @RestController
 @RequestMapping("api/buses")
 public final class Controller {
+    /**
+     * Returns a response to a {@code GET} request for VTA4j bus data using the specified stop ID.
+     *
+     * @param stopId the stop ID to be used in the operation
+     * @return a response to a {@code GET} request for VTA4j bus data using the specified stop ID
+     */
     @GetMapping
-    public ResponseEntity<Map<String, ?>> getBuses(@RequestParam int stopId) {
+    public ResponseEntity<Map<String, ?>> read(@RequestParam int stopId) {
         Set<Bus> buses = Model.getBuses(stopId);
 
         Map<String, ?> responseMap = Map.of(
@@ -48,5 +60,5 @@ public final class Controller {
         );
 
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
-    } //getBuses
+    } //read
 }

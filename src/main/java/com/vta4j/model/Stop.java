@@ -30,9 +30,21 @@ import java.util.Objects;
  * A bus stop of the Valley Transportation Authority.
  *
  * @author Logan Kulinski, lbkulinski@gmail.com
- * @version April 17, 2022
- * @param id the ID of this {@link Stop}
- * @param name the name of this {@link Stop}
+ * @version April 19, 2022
+ * @param id the ID of this stop
+ * @param name the name of this stop
  */
 public record Stop(String id, String name) {
+    /**
+     * Constructs an instance of the {@link Stop} class.
+     *
+     * @param id the ID to be used in construction
+     * @param name to be used in construction
+     * @throws NullPointerException if the specified ID or name is {@code null}
+     */
+    public Stop {
+        Objects.requireNonNull(id, "the specified ID is null");
+
+        Objects.requireNonNull(name, "the specified name is null");
+    } //Stop
 }

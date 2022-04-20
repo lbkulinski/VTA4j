@@ -39,15 +39,24 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
+/**
+ * A model of the VTA4j application.
+ *
+ * @author Logan Kulinski, lbkulinski@gmail.com
+ * @version April 19, 2022
+ */
 public final class Model {
+    /**
+     * The logger of the {@link Model} class.
+     */
     private static final Logger LOGGER;
 
+    /**
+     * The API key of the {@link Model} class.
+     */
     private static final String API_KEY;
 
     static {
@@ -56,6 +65,11 @@ public final class Model {
         API_KEY = Model.getApiKey();
     } //static
 
+    /**
+     * Returns the API key of the VTA4j application.
+     *
+     * @return the API key of the VTA4j application
+     */
     private static String getApiKey() {
         String pathString = "src/main/resources/api_key.properties";
 
@@ -76,10 +90,19 @@ public final class Model {
         return properties.getProperty("api_key");
     } //getApiKey
 
+    /**
+     * Returns a {@link Set} of buses parsed from the specified body.
+     *
+     * @param body the body to be used in the operation
+     * @return a {@link Set} of buses parsed from the specified body
+     * @throws NullPointerException if the specified body is {@code null}
+     */
     private static Set<Bus> parseBody(String body) {
-        GsonBuilder builder = new GsonBuilder();
+        Objects.requireNonNull(body, "the specified body is null");
 
         BusAdapter busAdapter = new BusAdapter();
+
+        GsonBuilder builder = new GsonBuilder();
 
         builder.registerTypeAdapter(Bus.class, busAdapter);
 
@@ -127,9 +150,15 @@ public final class Model {
             } //end if
         } //end for
 
-        return buses;
+        return Collections.unmodifiableSet(buses);
     } //parseBody
 
+    /**
+     * Returns a {@link Set} of buses set to arrive at the stop with the specified ID.
+     *
+     * @param stopId the stop ID to be used in the operation
+     * @return a {@link Set} of buses set to arrive at the stop with the specified ID
+     */
     public static Set<Bus> getBuses(int stopId) {
         if (Model.API_KEY == null) {
             return Set.of();
@@ -199,6 +228,6 @@ public final class Model {
             return Set.of();
         } //end try catch
 
-        return Collections.unmodifiableSet(buses);
+        return buses;
     } //getBuses
 }

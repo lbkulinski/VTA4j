@@ -119,6 +119,7 @@ public final class BusAdapter extends TypeAdapter<Bus> {
      * @param jsonWriter the JSON writer to be used in the operation
      * @param bus the bus to be used in the operation
      * @throws IOException if an I/O error occurs
+     * @throws NullPointerException if the specified JSON writer or bus is {@code null}
      */
     public static void writeBus(JsonWriter jsonWriter, Bus bus) throws IOException {
         Objects.requireNonNull(jsonWriter, "the specified JSON writer is null");
@@ -316,6 +317,7 @@ public final class BusAdapter extends TypeAdapter<Bus> {
      *
      * @param jsonReader the JSON reader to be used in the operation
      * @throws IOException if an I/O error occurs
+     * @throws NullPointerException if the specified JSON reader is {@code null}
      */
     public static Bus readBus(JsonReader jsonReader) throws IOException {
         Objects.requireNonNull(jsonReader, "the specified JSON reader is null");

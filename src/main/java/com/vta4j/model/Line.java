@@ -30,9 +30,9 @@ import java.util.Objects;
  * A bus line of the Valley Transportation Authority.
  *
  * @author Logan Kulinski, lbkulinski@gmail.com
- * @version April 17, 2022
- * @param id the ID of this {@link Line}
- * @param name the name of this {@link Line}
+ * @version April 19, 2022
+ * @param id the ID of this line
+ * @param name the name of this line
  */
 public record Line(String id, String name) {
     /**
@@ -40,6 +40,7 @@ public record Line(String id, String name) {
      *
      * @param id the ID to be used in the operation
      * @param name the name to be used in the operation
+     * @throws NullPointerException if the specified ID or name is {@code null}
      */
     public Line {
         Objects.requireNonNull(id, "the specified ID is null");
