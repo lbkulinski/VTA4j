@@ -37,10 +37,10 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/buses")
 public final class Controller {
-    @GetMapping("get_buses")
-    public ResponseEntity<Map<String, ?>> getBuses(@RequestParam("stop_id") int stopId) {
+    @GetMapping
+    public ResponseEntity<Map<String, ?>> getBuses(@RequestParam int stopId) {
         Set<Bus> buses = Model.getBuses(stopId);
 
         Map<String, ?> responseMap = Map.of(
