@@ -47,7 +47,7 @@ import java.util.HashMap;
  * A GSON type adapter for the {@link Bus} class.
  * 
  * @author Logan Kulinski, lbkulinski@gmail.com
- * @version April 19, 2022
+ * @version April 23, 2022
  */
 public final class BusAdapter extends TypeAdapter<Bus> {
     /**
@@ -140,13 +140,6 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         jsonWriter.value(direction);
 
-        jsonWriter.name("predictionTime");
-
-        String predictionTime = bus.predictionTime()
-                                   .toString();
-
-        jsonWriter.value(predictionTime);
-
         jsonWriter.name("arrivalTime");
 
         String arrivalTime = bus.arrivalTime()
@@ -170,20 +163,19 @@ public final class BusAdapter extends TypeAdapter<Bus> {
     } //write
 
     /**
-     * Reads a time using the specified JSON reader, bus data, and key.
+     * Reads an arrival time using the specified JSON reader and bus data.
      * 
      * @param jsonReader the JSON reader to be used in the operation
      * @param busData the bus data to be used in the operation
-     * @param key the key to be used in the operation
      * @throws IOException if an I/O error occurs
      */
-    private static void readTime(JsonReader jsonReader, Map<String, Object> busData, String key) throws IOException {
-        String timeString = jsonReader.nextString();
+    private static void readArrivalTime(JsonReader jsonReader, Map<String, Object> busData) throws IOException {
+        String arrivalTimeString = jsonReader.nextString();
 
         Instant instant;
         
         try {
-            instant = Instant.parse(timeString);
+            instant = Instant.parse(arrivalTimeString);
         } catch (DateTimeParseException e) {
             BusAdapter.LOGGER.atError()
                              .withThrowable(e)
@@ -194,12 +186,12 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         String zoneIdString = "GMT-07:00";
 
-        ZonedDateTime dateTime;
+        ZonedDateTime arrivalTime;
 
         try {
             ZoneId zoneId = ZoneId.of(zoneIdString);
 
-            dateTime = ZonedDateTime.ofInstant(instant, zoneId);
+            arrivalTime = ZonedDateTime.ofInstant(instant, zoneId);
         } catch (DateTimeException e) {
             BusAdapter.LOGGER.atError()
                              .withThrowable(e)
@@ -208,8 +200,8 @@ public final class BusAdapter extends TypeAdapter<Bus> {
             return;
         } //end try catch
 
-        busData.put(key, dateTime);
-    } //readTime
+        busData.put("arrivalTime", arrivalTime);
+    } //readArrivalTime
 
     /**
      * Reads a monitored call using the specified JSON reader and bus data.
@@ -242,9 +234,7 @@ public final class BusAdapter extends TypeAdapter<Bus> {
                     busData.put("stopName", stopName);
                 } //case "StopPointName"
                 case "ExpectedArrivalTime" -> {
-                    String key = "arrivalTime";
-
-                    BusAdapter.readTime(jsonReader, busData, key);
+                    BusAdapter.readArrivalTime(jsonReader, busData);
                 } //case "ExpectedArrivalTime"
                 default -> jsonReader.skipValue();
             } //end switch
@@ -335,14 +325,10 @@ public final class BusAdapter extends TypeAdapter<Bus> {
                 continue;
             } //end if
 
-            switch (name) {
-                case "RecordedAtTime" -> {
-                    String key = "predictionTime";
-
-                    BusAdapter.readTime(jsonReader, busData, key);
-                } //case "RecordedAtTime"
-                case "MonitoredVehicleJourney" -> BusAdapter.readMonitoredVehicleJourney(jsonReader, busData);
-                default -> jsonReader.skipValue();
+            if (Objects.equals(name, "MonitoredVehicleJourney")) {
+                BusAdapter.readMonitoredVehicleJourney(jsonReader, busData);
+            } else {
+                jsonReader.skipValue();
             } //end switch
         } //end while
 
@@ -376,11 +362,9 @@ public final class BusAdapter extends TypeAdapter<Bus> {
 
         String direction = (String) busData.get("direction");
 
-        ZonedDateTime predictionTime = (ZonedDateTime) busData.get("predictionTime");
-
         ZonedDateTime arrivalTime = (ZonedDateTime) busData.get("arrivalTime");
 
-        return new Bus(id, line, stop, destination, direction, predictionTime, arrivalTime);
+        return new Bus(id, line, stop, destination, direction, arrivalTime);
     } //readBus
 
     /**
