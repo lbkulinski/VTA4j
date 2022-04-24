@@ -242,15 +242,9 @@
 
         let arrivalMillis = arrivalDate.getTime();
 
-        if (!bus.hasOwnProperty("predictionTime")) {
-            return null;
-        } //end if
+        let nowMillis = Date.now();
 
-        let predictionDate = new Date(bus.predictionTime);
-
-        let predictionMillis = predictionDate.getTime();
-
-        let difference = arrivalMillis - predictionMillis;
+        let difference = arrivalMillis - nowMillis;
 
         let minuteMillis = 60000;
 
